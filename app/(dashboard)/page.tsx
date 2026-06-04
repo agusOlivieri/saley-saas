@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Eye, MessageCircle, Users, ExternalLink, MapPin, ChevronRight, BarChart2 } from 'lucide-react';
 import Link from 'next/link';
+import { getPromos } from '@/app/actions/promos';
 
 const performanceData = [
   { name: 'Lun', visualizaciones: 1500, interacciones: 200 },
@@ -16,6 +17,20 @@ const performanceData = [
 ];
 
 export default function DashboardPage() {
+  const [promos, setPromos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadPromos() {
+      const response = await getPromos();
+      if (response.success && response.data) {
+        setPromos(response.data);
+      }
+      setLoading(false);
+    }
+    loadPromos();
+  }, []);
+
   return (
     <div className="pt-4 pb-10 space-y-6">
       
@@ -101,9 +116,29 @@ export default function DashboardPage() {
           <button className="text-xs font-semibold text-orange-500">Ver todas</button>
         </div>
         <div className="space-y-4">
-          <PromoItem title="2x1 en Cafés" schedule="Todos los días • 8 AM - 12 PM" status="Activa" interactions="642" color="bg-orange-100" />
-          <PromoItem title="Desayuno Completo" schedule="Lun a Vie • 7 AM - 11 AM" status="Activa" interactions="321" color="bg-amber-100" />
-          <PromoItem title="Happy Hour Merienda" schedule="Todos los días • 16 PM - 19 PM" status="Activa" interactions="282" color="bg-green-100" />
+          {loading ? (
+            <p className="text-sm text-gray-500 text-center py-4">Cargando promociones...</p>
+          ) : promos.length > 0 ? (
+            promos.map((promo, idx) => {
+              const colorClass = ['bg-orange-100', 'bg-amber-100', 'bg-green-100', 'bg-blue-100'][idx % 4];
+              // Parsear el horario si existe
+              const schedule = promo.hora_inicio && promo.hora_fin 
+                ? `Todos los días • ${promo.hora_inicio.slice(0,5)} - ${promo.hora_fin.slice(0,5)}`
+                : 'Horario no especificado';
+              return (
+                <PromoItem 
+                  key={promo.id}
+                  title={promo.titulo || 'Promoción'} 
+                  schedule={schedule} 
+                  status={promo.activa ? "Activa" : "Inactiva"} 
+                  interactions="0" 
+                  color={colorClass} 
+                />
+              )
+            })
+          ) : (
+            <p className="text-sm text-gray-500 text-center py-4">No tienes promociones activas.</p>
+          )}
         </div>
       </section>
 
