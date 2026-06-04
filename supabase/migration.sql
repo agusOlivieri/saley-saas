@@ -1,0 +1,41 @@
+-- =====================================================================
+-- MIGRACIÓN DE BASE DE DATOS: SALEY MVP
+-- Corrige incompatibilidades entre el Dashboard/Formulario y el esquema actual.
+-- =====================================================================
+
+-- 1. Actualizar la tabla de 'comercios'
+ALTER TABLE comercios 
+ADD COLUMN logo_url text;
+
+COMMENT ON COLUMN comercios.logo_url IS 'URL del logo/avatar del comercio';
+
+-- 2. Actualizar la tabla de 'ofertas'
+ALTER TABLE ofertas 
+ADD COLUMN imagen_url text,
+ADD COLUMN categoria text,
+ADD COLUMN hora_inicio time,
+ADD COLUMN hora_fin time,
+ADD COLUMN dias_semana integer[], -- Ej: {1,2,3,4,5} para Lunes a Viernes (1=Lunes, 7=Domingo)
+ADD COLUMN radio_alcance_km numeric DEFAULT 1.2;
+
+COMMENT ON COLUMN ofertas.imagen_url IS 'URL de la imagen del producto promocionado';
+COMMENT ON COLUMN ofertas.categoria IS 'Categoría específica de la promoción';
+COMMENT ON COLUMN ofertas.hora_inicio IS 'Hora del día en que se activa la promoción';
+COMMENT ON COLUMN ofertas.hora_fin IS 'Hora del día en que finaliza la promoción';
+COMMENT ON COLUMN ofertas.dias_semana IS 'Días de la semana activos para la promoción';
+COMMENT ON COLUMN ofertas.radio_alcance_km IS 'Radio de geolocalización en kilómetros';
+
+-- 3. Crear la tabla de 'interacciones' (para Métricas y Heatmap)
+CREATE TABLE interacciones (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    oferta_id uuid REFERENCES ofertas(id) ON DELETE CASCADE,
+    consumidor_id uuid REFERENCES consumidores(id) ON DELETE SET NULL, -- Puede ser nulo si es anónimo
+    tipo_accion text NOT NULL CHECK (tipo_accion IN ('vista', 'interaccion')),
+    ubicacion geography(Point, 4326), -- Punto desde donde interactuó el usuario
+    creado_el timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Crear índice espacial GIST para consultas ultra rápidas en el mapa
+CREATE INDEX interacciones_ubicacion_gist ON interacciones USING gist (ubicacion);
+
+COMMENT ON TABLE interacciones IS 'Registro de visualizaciones y clicks de consumidores para estadísticas y mapa de calor';
