@@ -6,18 +6,17 @@ import { revalidatePath } from 'next/cache';
 export async function createPromo(formData: any) {
   const supabase = await createClient();
 
-  // En un entorno real, primero obtenemos el comercio_id del usuario autenticado
-  // const { data: { user } } = await supabase.auth.getUser();
-  // const comercio_id = user?.id; // asumiendo que el ID del user = ID del comercio
-
-  // Por ahora mockeamos el comercio_id (debes reemplazar esto con el ID real de tu comercio en Supabase)
-  const mockComercioId = "6facc619-7dfc-4cb4-ad4e-82923a0141ff"; 
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return { success: false, error: 'Usuario no autenticado' };
+  }
+  const comercioId = user.id;
 
   try {
     const { data, error } = await supabase
       .from('promos')
       .insert({
-        comercio_id: mockComercioId,
+        comercio_id: comercioId,
         titulo: formData.titulo,
         descripcion: formData.descripcion,
         tipo_beneficio: formData.tipo_beneficio,
