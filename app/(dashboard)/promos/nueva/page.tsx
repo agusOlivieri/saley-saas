@@ -68,7 +68,7 @@ export default function NuevaPromoPage() {
       const response = await createPromo(data);
       if (response.success) {
         alert('Promoción publicada con éxito.');
-        router.push('/');
+        router.push('/promos');
       } else {
         alert('Error al publicar: ' + response.error);
       }
@@ -81,7 +81,7 @@ export default function NuevaPromoPage() {
 
   return (
     <div className="pt-2 pb-10 space-y-6">
-      
+
       {/* Header del Formulario */}
       <div className="flex items-center justify-between">
         <Link href="/" className="text-blue-950 flex items-center justify-center p-2 hover:bg-gray-50 rounded-full transition-colors" id="btn-back">
@@ -98,7 +98,7 @@ export default function NuevaPromoPage() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" id="form-nueva-promo">
-        
+
         {/* Campo: Título */}
         <div className="space-y-2">
           <label htmlFor="titulo" className="block text-xs font-bold text-blue-950 uppercase tracking-wider">Título</label>

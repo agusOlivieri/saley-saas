@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Eye, MessageCircle, Calendar, Tag, ChevronRight } from 'lucide-react';
+import PromoDetailsLink from './PromoDetailsLink';
 
 interface Promo {
   id: string;
@@ -88,9 +89,7 @@ export default function PromoCard({ promo, onReactivate }: PromoCardProps) {
 
       {/* Acciones */}
       <div className="flex flex-col items-end justify-between self-stretch">
-        <Link href={`/promos/${promo.id}`} className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
-          <ChevronRight size={20} />
-        </Link>
+        <PromoDetailsLink id={promo.id} />
 
         {isFinished && onReactivate && (
           <button

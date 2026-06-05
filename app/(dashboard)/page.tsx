@@ -6,6 +6,7 @@ import { Eye, MessageCircle, Users, ExternalLink, MapPin, ChevronRight, BarChart
 import Link from 'next/link';
 import { getPromos } from '@/app/actions/promos';
 import { getComercioProfile } from '@/app/actions/auth';
+import PromoDetailsLink from '@/app/components/promos/PromoDetailsLink';
 
 const performanceData = [
   { name: 'Lun', visualizaciones: 1500, interacciones: 200 },
@@ -123,7 +124,6 @@ export default function DashboardPage() {
       <section className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-4">
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-bold text-gray-800">Promociones activas</h3>
-          <button className="text-xs font-semibold text-orange-500">Ver todas</button>
         </div>
         <div className="space-y-4">
           {loading ? (
@@ -138,6 +138,7 @@ export default function DashboardPage() {
               return (
                 <PromoItem
                   key={promo.id}
+                  id={promo.id}
                   title={promo.titulo || 'Promoción'}
                   schedule={schedule}
                   status={promo.activa ? "Activa" : "Inactiva"}
@@ -173,7 +174,7 @@ function StatCard({ title, value, increase, icon }: { title: string, value: stri
   );
 }
 
-function PromoItem({ title, schedule, status, interactions, color }: { title: string, schedule: string, status: string, interactions: string, color: string }) {
+function PromoItem({ id, title, schedule, status, interactions, color }: { id: string, title: string, schedule: string, status: string, interactions: string, color: string }) {
   return (
     <div className="flex items-center justify-between border-b border-gray-50 pb-3 last:border-0 last:pb-0">
       <div className="flex items-center gap-3">
@@ -191,7 +192,7 @@ function PromoItem({ title, schedule, status, interactions, color }: { title: st
           <BarChart2 size={10} /> {interactions} interacciones
         </span>
       </div>
-      <ChevronRight size={16} className="text-gray-300 ml-2" />
+      <PromoDetailsLink id={id} size={16} className="text-gray-300 ml-2 hover:text-blue-600 transition-colors p-1" />
     </div>
   );
 }
