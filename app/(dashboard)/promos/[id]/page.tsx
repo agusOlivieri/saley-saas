@@ -47,9 +47,9 @@ export default async function PromoDetailPage({ params }: { params: Promise<{ id
           </div>
           
           <div className="flex gap-2">
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-semibold transition-colors">
+            <Link href={`/promos/${promo.id}/editar`} className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-semibold transition-colors">
               <Edit size={16} /> Editar
-            </button>
+            </Link>
             <DeletePromoButton id={promo.id} />
           </div>
         </div>
