@@ -26,6 +26,28 @@ export default function RegistroPage() {
     <div>
       <h2 className="text-xl font-bold text-blue-950 text-center mb-6">Crear cuenta comercial</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre</label>
+            <input
+              name="nombre"
+              type="text"
+              required
+              className="w-full bg-[#F8FAFC] border border-gray-100 rounded-xl py-3 px-4 text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white transition-all"
+              placeholder="Ej. Juan"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Apellido</label>
+            <input
+              name="apellido"
+              type="text"
+              required
+              className="w-full bg-[#F8FAFC] border border-gray-100 rounded-xl py-3 px-4 text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-white transition-all"
+              placeholder="Ej. Pérez"
+            />
+          </div>
+        </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Correo electrónico</label>
           <input

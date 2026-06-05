@@ -1,8 +1,18 @@
 import { Home, Tags, BarChart2, User, Bell } from 'lucide-react';
 import Link from 'next/link';
 import Logo from '@/app/components/Logo';
+import { createClient } from '@/app/lib/supabase/server';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  const nombre = user?.user_metadata?.nombre || '';
+  const apellido = user?.user_metadata?.apellido || '';
+  const initials = nombre && apellido 
+    ? `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase()
+    : 'CB';
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-20 md:pb-0 flex justify-center">
       {/* Contenedor simulando la vista Mobile-First */}
@@ -16,8 +26,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Bell size={24} />
               <span className="absolute top-0 right-0 w-2 h-2 bg-orange-500 rounded-full border border-white"></span>
             </button>
-            <div className="w-9 h-9 bg-blue-950 text-white rounded-full flex items-center justify-center font-semibold" data-testid="user-avatar">
-              CB
+            <div className="w-9 h-9 bg-blue-950 text-white rounded-full flex items-center justify-center font-semibold text-sm" data-testid="user-avatar">
+              {initials}
             </div>
           </div>
         </header>

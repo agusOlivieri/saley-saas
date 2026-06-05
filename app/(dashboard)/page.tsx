@@ -5,6 +5,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import { Eye, MessageCircle, Users, ExternalLink, MapPin, ChevronRight, BarChart2 } from 'lucide-react';
 import Link from 'next/link';
 import { getPromos } from '@/app/actions/promos';
+import { getComercioProfile } from '@/app/actions/auth';
 
 const performanceData = [
   { name: 'Lun', visualizaciones: 1500, interacciones: 200 },
@@ -18,17 +19,24 @@ const performanceData = [
 
 export default function DashboardPage() {
   const [promos, setPromos] = useState<any[]>([]);
+  const [comercio, setComercio] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadPromos() {
-      const response = await getPromos();
-      if (response.success && response.data) {
-        setPromos(response.data);
+    async function loadData() {
+      const [promosRes, comercioRes] = await Promise.all([
+        getPromos(),
+        getComercioProfile()
+      ]);
+      if (promosRes.success && promosRes.data) {
+        setPromos(promosRes.data);
+      }
+      if (comercioRes.success && comercioRes.data) {
+        setComercio(comercioRes.data);
       }
       setLoading(false);
     }
-    loadPromos();
+    loadData();
   }, []);
 
   return (
@@ -36,7 +44,9 @@ export default function DashboardPage() {
       
       {/* Saludo y CTA */}
       <section>
-        <h2 className="text-2xl font-bold text-blue-950">Hola, Café de Barrio</h2>
+        <h2 className="text-2xl font-bold text-blue-950">
+          Hola, {comercio?.nombre_comercial || 'Café de Barrio'}
+        </h2>
         <p className="text-sm text-gray-500 mt-1 mb-4">Atraé más clientes cerca de tu local y medí resultados.</p>
         <Link 
           href="/promos/nueva" 
