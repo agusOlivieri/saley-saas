@@ -41,15 +41,15 @@ export default function DashboardPage() {
 
   return (
     <div className="pt-4 pb-10 space-y-6">
-      
+
       {/* Saludo y CTA */}
       <section>
         <h2 className="text-2xl font-bold text-blue-950">
           Hola, {comercio?.nombre_comercial || 'Café de Barrio'}
         </h2>
         <p className="text-sm text-gray-500 mt-1 mb-4">Atraé más clientes cerca de tu local y medí resultados.</p>
-        <Link 
-          href="/promos/nueva" 
+        <Link
+          href="/promos/nueva"
           className="w-full bg-[#FF5A1F] hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-sm transition-colors text-center"
         >
           <span className="text-xl leading-none text-[#FF5A1F] bg-white rounded-full px-1">+</span> Crear promoción
@@ -83,12 +83,12 @@ export default function DashboardPage() {
             <AreaChart data={performanceData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorVis" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#1e3a8a" stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor="#1e3a8a" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#1e3a8a" stopOpacity={0.1} />
+                  <stop offset="95%" stopColor="#1e3a8a" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorInt" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f97316" stopOpacity={0.1}/>
-                  <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#f97316" stopOpacity={0.1} />
+                  <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#9ca3af' }} />
@@ -132,17 +132,17 @@ export default function DashboardPage() {
             promos.map((promo, idx) => {
               const colorClass = ['bg-orange-100', 'bg-amber-100', 'bg-green-100', 'bg-blue-100'][idx % 4];
               // Parsear el horario si existe
-              const schedule = promo.hora_inicio && promo.hora_fin 
-                ? `Todos los días • ${promo.hora_inicio.slice(0,5)} - ${promo.hora_fin.slice(0,5)}`
+              const schedule = promo.hora_inicio && promo.hora_fin
+                ? `Todos los días • ${promo.hora_inicio.slice(0, 5)} - ${promo.hora_fin.slice(0, 5)}`
                 : 'Horario no especificado';
               return (
-                <PromoItem 
+                <PromoItem
                   key={promo.id}
-                  title={promo.titulo || 'Promoción'} 
-                  schedule={schedule} 
-                  status={promo.activa ? "Activa" : "Inactiva"} 
-                  interactions="0" 
-                  color={colorClass} 
+                  title={promo.titulo || 'Promoción'}
+                  schedule={schedule}
+                  status={promo.activa ? "Activa" : "Inactiva"}
+                  interactions="0"
+                  color={colorClass}
                 />
               )
             })
@@ -159,7 +159,7 @@ export default function DashboardPage() {
 function StatCard({ title, value, increase, icon }: { title: string, value: string, increase: string, icon: React.ReactNode }) {
   return (
     <div className="bg-white border border-gray-100 rounded-2xl p-3 shadow-sm flex flex-col justify-between">
-      <div className="flex justify-between items-start mb-2">
+      <div className="flex justify-between items-center mb-2">
         <span className="text-[10px] font-semibold text-gray-500 leading-tight">{title}</span>
         <div className="bg-blue-50 p-1 rounded-full">{icon}</div>
       </div>

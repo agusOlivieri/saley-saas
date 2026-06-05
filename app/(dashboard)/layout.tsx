@@ -1,15 +1,15 @@
-import { Home, Tags, BarChart2, User, Bell } from 'lucide-react';
-import Link from 'next/link';
+import { Bell } from 'lucide-react';
 import Logo from '@/app/components/Logo';
 import { createClient } from '@/app/lib/supabase/server';
+import BottomNav from '@/app/components/BottomNav';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   const nombre = user?.user_metadata?.nombre || '';
   const apellido = user?.user_metadata?.apellido || '';
-  const initials = nombre && apellido 
+  const initials = nombre && apellido
     ? `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase()
     : 'CB';
 
@@ -38,24 +38,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </main>
 
         {/* Navegación Inferior */}
-        <nav className="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-100 z-50">
-          <div className="flex justify-between items-center h-16 px-6">
-            <NavItem href="/" icon={<Home size={24} />} label="Dashboard" active />
-            <NavItem href="/promos/nueva" icon={<Tags size={24} />} label="Promos" />
-            <NavItem href="/analiticas" icon={<BarChart2 size={24} />} label="Analíticas" />
-            <NavItem href="/perfil" icon={<User size={24} />} label="Perfil" />
-          </div>
-        </nav>
+        <BottomNav />
       </div>
     </div>
-  );
-}
-
-function NavItem({ href, icon, label, active = false }: { href: string; icon: React.ReactNode; label: string; active?: boolean }) {
-  return (
-    <Link href={href} className={`flex flex-col items-center gap-1 ${active ? 'text-blue-900' : 'text-gray-400 hover:text-gray-600'}`}>
-      {icon}
-      <span className={`text-[10px] ${active ? 'font-bold' : 'font-medium'}`}>{label}</span>
-    </Link>
   );
 }

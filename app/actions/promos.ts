@@ -26,7 +26,6 @@ export async function createPromo(formData: any) {
         hora_inicio: formData.hora_inicio,
         hora_fin: formData.hora_fin,
         activa: formData.activa,
-        // dias_semana: [1,2,3,4,5,6,7] // asumiendo 'todos los dias' por defecto
       })
       .select()
       .single();
@@ -36,7 +35,7 @@ export async function createPromo(formData: any) {
       return { success: false, error: error.message };
     }
 
-    revalidatePath('/'); // Revalidar el dashboard para que muestre la nueva promo
+    revalidatePath('/promos');
     return { success: true, data };
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -48,7 +47,6 @@ export async function getPromos() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { success: false, data: [] };
 
-  // Intentamos primero con la tabla 'ofertas' según migration.sql, o 'promos' según promos.ts
   const { data, error } = await supabase
     .from('promos')
     .select('*')
@@ -57,7 +55,44 @@ export async function getPromos() {
 
   if (error) {
     console.error('Error fetching from promos', error);
+    return { success: false, error: error.message };
   }
 
   return { success: true, data: data || [] };
+}
+
+export async function deletePromo(id: string) {
+  const supabase = await createClient();
+  
+  const { error } = await supabase
+    .from('promos')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath('/promos');
+  return { success: true };
+}
+
+export async function reactivatePromo(id: string, fechaInicio: string, fechaFin: string) {
+  const supabase = await createClient();
+  
+  const { error } = await supabase
+    .from('promos')
+    .update({ 
+      fecha_inicio: fechaInicio, 
+      fecha_fin: fechaFin,
+      activa: true 
+    })
+    .eq('id', id);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath('/promos');
+  return { success: true };
 }
