@@ -1,29 +1,22 @@
 import { Home, Tags, BarChart2, User, Bell } from 'lucide-react';
 import Link from 'next/link';
+import Logo from '@/app/components/Logo';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-20 md:pb-0 flex justify-center">
       {/* Contenedor simulando la vista Mobile-First */}
       <div className="w-full max-w-md bg-white min-h-screen relative shadow-sm flex flex-col">
-        
+
         {/* Top Header Global */}
-        <header className="flex justify-between items-center p-4 bg-white sticky top-0 z-10">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-900 rounded-md flex items-center justify-center">
-              <span className="text-white font-bold text-xs">S.</span>
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-blue-950 leading-none">Saley</h1>
-              <span className="text-[10px] text-gray-500">para Comercios</span>
-            </div>
-          </div>
+        <header className="flex justify-between items-center py-3 px-4 bg-white sticky top-0 z-10">
+          <Logo />
           <div className="flex items-center gap-3">
             <button className="text-gray-600 relative" data-testid="notification-btn">
               <Bell size={24} />
               <span className="absolute top-0 right-0 w-2 h-2 bg-orange-500 rounded-full border border-white"></span>
             </button>
-            <div className="w-10 h-10 bg-blue-950 text-white rounded-full flex items-center justify-center font-semibold" data-testid="user-avatar">
+            <div className="w-9 h-9 bg-blue-950 text-white rounded-full flex items-center justify-center font-semibold" data-testid="user-avatar">
               CB
             </div>
           </div>
