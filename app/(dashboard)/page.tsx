@@ -6,28 +6,27 @@ import { Eye, MessageCircle, Users, ExternalLink, MapPin, ChevronRight, BarChart
 import Link from 'next/link';
 import { getPromos } from '@/app/actions/promos';
 import { getComercioProfile } from '@/app/actions/auth';
+import { getTotalesMetricas, getRendimientoPorDia, getInteraccionesPorPromo } from '@/app/actions/interacciones';
 import PromoDetailsLink from '@/app/components/promos/PromoDetailsLink';
 
-const performanceData = [
-  { name: 'Lun', visualizaciones: 1500, interacciones: 200 },
-  { name: 'Mar', visualizaciones: 3000, interacciones: 1800 },
-  { name: 'Mié', visualizaciones: 4800, interacciones: 1000 },
-  { name: 'Jue', visualizaciones: 4500, interacciones: 2800 },
-  { name: 'Vie', visualizaciones: 6000, interacciones: 1800 },
-  { name: 'Sáb', visualizaciones: 7000, interacciones: 3200 },
-  { name: 'Dom', visualizaciones: 5800, interacciones: 2000 },
-];
+
 
 export default function DashboardPage() {
   const [promos, setPromos] = useState<any[]>([]);
   const [comercio, setComercio] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [metricas, setMetricas] = useState<{ vistas: number; interacciones: number; consumidores: number } | null>(null);
+  const [rendimiento, setRendimiento] = useState<any[]>([]);
+  const [interaccionesPorPromo, setInteraccionesPorPromo] = useState<Record<string, { vistas: number; interacciones: number }>>({}); 
 
   useEffect(() => {
     async function loadData() {
-      const [promosRes, comercioRes] = await Promise.all([
+      const [promosRes, comercioRes, metricasRes, rendimientoRes, interPorPromoRes] = await Promise.all([
         getPromos(),
-        getComercioProfile()
+        getComercioProfile(),
+        getTotalesMetricas('7d'),
+        getRendimientoPorDia('7d'),
+        getInteraccionesPorPromo(),
       ]);
       if (promosRes.success && promosRes.data) {
         setPromos(promosRes.data);
@@ -35,6 +34,9 @@ export default function DashboardPage() {
       if (comercioRes.success && comercioRes.data) {
         setComercio(comercioRes.data);
       }
+      if (metricasRes.success && metricasRes.data) setMetricas(metricasRes.data);
+      if (rendimientoRes.success && rendimientoRes.data) setRendimiento(rendimientoRes.data);
+      if (interPorPromoRes.success && interPorPromoRes.data) setInteraccionesPorPromo(interPorPromoRes.data);
       setLoading(false);
     }
     loadData();
@@ -59,9 +61,9 @@ export default function DashboardPage() {
 
       {/* Tarjetas de Métricas */}
       <section className="grid grid-cols-3 gap-3">
-        <StatCard title="Visualizaciones" value="12.458" increase="23%" icon={<Eye size={16} className="text-blue-600" />} />
-        <StatCard title="Interacciones" value="1.245" increase="18%" icon={<MessageCircle size={16} className="text-blue-600" />} />
-        <StatCard title="Clientes alcanzados" value="892" increase="31%" icon={<Users size={16} className="text-blue-600" />} />
+        <StatCard title="Visualizaciones" value={metricas ? metricas.vistas.toLocaleString('es-AR') : '...'} increase="" icon={<Eye size={16} className="text-blue-600" />} />
+        <StatCard title="Interacciones" value={metricas ? metricas.interacciones.toLocaleString('es-AR') : '...'} increase="" icon={<MessageCircle size={16} className="text-blue-600" />} />
+        <StatCard title="Clientes alcanzados" value={metricas ? metricas.consumidores.toLocaleString('es-AR') : '...'} increase="" icon={<Users size={16} className="text-blue-600" />} />
       </section>
 
       {/* Gráfico de Rendimiento */}
@@ -81,7 +83,7 @@ export default function DashboardPage() {
         </div>
         <div className="h-48 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={performanceData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
+            <AreaChart data={rendimiento} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorVis" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#1e3a8a" stopOpacity={0.1} />
@@ -142,7 +144,7 @@ export default function DashboardPage() {
                   title={promo.titulo || 'Promoción'}
                   schedule={schedule}
                   status={promo.activa ? "Activa" : "Inactiva"}
-                  interactions="0"
+                  interactions={String(interaccionesPorPromo[promo.id]?.interacciones ?? 0)}
                   color={colorClass}
                 />
               )
@@ -166,9 +168,11 @@ function StatCard({ title, value, increase, icon }: { title: string, value: stri
       </div>
       <div>
         <p className="text-xl font-bold text-gray-800">{value}</p>
-        <p className="text-[10px] font-medium text-green-600 mt-1 flex items-center gap-1">
-          <span className="leading-none mb-0.5">↗</span> {increase} vs ayer
-        </p>
+        {increase && (
+          <p className="text-[10px] font-medium text-green-600 mt-1 flex items-center gap-1">
+            <span className="leading-none mb-0.5">↗</span> {increase} vs ayer
+          </p>
+        )}
       </div>
     </div>
   );

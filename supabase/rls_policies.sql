@@ -5,7 +5,7 @@
 
 -- Habilitar RLS en las tablas principales
 ALTER TABLE comercios ENABLE ROW LEVEL SECURITY;
-ALTER TABLE ofertas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE promos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE interacciones ENABLE ROW LEVEL SECURITY;
 
 -- ---------------------------------------------------------------------
@@ -28,45 +28,48 @@ ON comercios FOR UPDATE
 USING (auth.uid() = id);
 
 -- ---------------------------------------------------------------------
--- POLÍTICAS PARA: ofertas
+-- POLÍTICAS PARA: promos
 -- ---------------------------------------------------------------------
 
--- Las ofertas activas son visibles para todos (necesario para la app de consumidores)
-CREATE POLICY "Ofertas activas son visibles para todos"
-ON ofertas FOR SELECT
+-- Las promos activas son visibles para todos (necesario para la app de consumidores)
+CREATE POLICY "Promos activas son visibles para todos"
+ON promos FOR SELECT
 USING (true);
 
--- Un comercio solo puede crear ofertas vinculadas a su propio ID
-CREATE POLICY "Comercios pueden crear sus propias ofertas"
-ON ofertas FOR INSERT
+-- Un comercio solo puede crear promos vinculadas a su propio ID
+CREATE POLICY "Comercios pueden crear sus propias promos"
+ON promos FOR INSERT
 WITH CHECK (auth.uid() = comercio_id);
 
--- Un comercio solo puede editar sus propias ofertas
-CREATE POLICY "Comercios pueden actualizar sus propias ofertas"
-ON ofertas FOR UPDATE
+-- Un comercio solo puede editar sus propias promos
+CREATE POLICY "Comercios pueden actualizar sus propias promos"
+ON promos FOR UPDATE
 USING (auth.uid() = comercio_id);
 
--- Un comercio solo puede eliminar sus propias ofertas
-CREATE POLICY "Comercios pueden eliminar sus propias ofertas"
-ON ofertas FOR DELETE
+-- Un comercio solo puede eliminar sus propias promos
+CREATE POLICY "Comercios pueden eliminar sus propias promos"
+ON promos FOR DELETE
 USING (auth.uid() = comercio_id);
 
 -- ---------------------------------------------------------------------
 -- POLÍTICAS PARA: interacciones
 -- ---------------------------------------------------------------------
 
--- Los comerciantes solo pueden leer interacciones de SUS propias ofertas
-CREATE POLICY "Comerciantes ven interacciones de sus propias ofertas"
+-- Los comerciantes solo pueden leer interacciones de SUS propias promos
+CREATE POLICY "Comerciantes ven interacciones de sus propias promos"
 ON interacciones FOR SELECT
 USING (
   EXISTS (
-    SELECT 1 FROM ofertas 
-    WHERE ofertas.id = interacciones.oferta_id 
-    AND ofertas.comercio_id = auth.uid()
+    SELECT 1 FROM promos 
+    WHERE promos.id = interacciones.oferta_id 
+    AND promos.comercio_id = auth.uid()
   )
 );
 
--- Los consumidores (o anónimos) pueden crear interacciones libremente
-CREATE POLICY "Cualquiera puede crear interacciones"
+-- Solo consumidores autenticados pueden crear interacciones (deben ser ellos mismos)
+CREATE POLICY "Consumidores autenticados pueden crear interacciones"
 ON interacciones FOR INSERT
-WITH CHECK (true);
+WITH CHECK (auth.uid() = consumidor_id);
+
+-- Permitir a usuarios autenticados y anon insertar en interacciones
+GRANT INSERT ON interacciones TO authenticated;

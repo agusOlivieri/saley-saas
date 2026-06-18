@@ -11,9 +11,10 @@ import { Plus } from 'lucide-react';
 interface PromosClientProps {
   initialPromos: any[];
   currentFilter: string;
+  interaccionesMap?: Record<string, { vistas: number; interacciones: number }>;
 }
 
-export default function PromosClient({ initialPromos, currentFilter }: PromosClientProps) {
+export default function PromosClient({ initialPromos, currentFilter, interaccionesMap }: PromosClientProps) {
   const [reactivatePromoId, setReactivatePromoId] = useState<string | null>(null);
 
   const filteredPromos = initialPromos.filter(promo => {
@@ -29,9 +30,9 @@ export default function PromosClient({ initialPromos, currentFilter }: PromosCli
           <h1 className="text-2xl font-bold text-blue-950 mb-1">Historial de promociones</h1>
           <p className="text-sm text-gray-500 mb-6">Revisa el rendimiento de tus promociones y gestiona tu catálogo.</p>
         </div>
-        
-        <Link 
-          href="/promos/nueva" 
+
+        <Link
+          href="/promos/nueva"
           className="bg-[#FF5A1F] hover:bg-orange-600 text-white font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 shadow-sm transition-colors text-sm whitespace-nowrap"
         >
           <Plus size={18} />
@@ -40,7 +41,7 @@ export default function PromosClient({ initialPromos, currentFilter }: PromosCli
       </div>
 
       <PromoTabs />
-      <SummaryCards />
+      {/* <SummaryCards /> */}
 
       <div className="space-y-4">
         {filteredPromos.length === 0 ? (
@@ -49,9 +50,13 @@ export default function PromosClient({ initialPromos, currentFilter }: PromosCli
           </div>
         ) : (
           filteredPromos.map((promo) => (
-            <PromoCard 
-              key={promo.id} 
-              promo={promo} 
+            <PromoCard
+              key={promo.id}
+              promo={{
+                ...promo,
+                vistas: interaccionesMap?.[promo.id]?.vistas ?? 0,
+                interacciones: interaccionesMap?.[promo.id]?.interacciones ?? 0
+              }}
               onReactivate={(id) => setReactivatePromoId(id)}
             />
           ))
@@ -59,8 +64,8 @@ export default function PromosClient({ initialPromos, currentFilter }: PromosCli
       </div>
 
       {reactivatePromoId && (
-        <ReactivateModal 
-          promoId={reactivatePromoId} 
+        <ReactivateModal
+          promoId={reactivatePromoId}
           onClose={() => setReactivatePromoId(null)}
           onSuccess={() => setReactivatePromoId(null)}
         />

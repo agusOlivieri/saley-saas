@@ -10,6 +10,8 @@ interface Promo {
   fecha_inicio: string;
   fecha_fin: string;
   activa: boolean;
+  vistas?: number;
+  interacciones?: number;
 }
 
 interface PromoCardProps {
@@ -46,7 +48,7 @@ export default function PromoCard({ promo, onReactivate }: PromoCardProps) {
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex gap-4 items-center relative overflow-hidden transition-all hover:shadow-md">
       {/* Generic Image/Color block */}
-      <div className={`w-24 h-24 rounded-xl flex-shrink-0 bg-gradient-to-br ${bgColorClass} flex items-center justify-center text-white text-center p-2 font-bold leading-tight shadow-inner`}>
+      <div className={`w-24 h-24 rounded-xl shrink-0 bg-linear-to-br ${bgColorClass} flex items-center justify-center text-white text-center p-2 font-bold leading-tight shadow-inner`}>
         {promo.titulo}
       </div>
 
@@ -73,14 +75,14 @@ export default function PromoCard({ promo, onReactivate }: PromoCardProps) {
           <div className="flex items-center gap-1.5">
             <Eye size={12} className="text-blue-500" />
             <div>
-              <p className="text-xs font-bold text-gray-800 leading-none">10000</p>
+              <p className="text-xs font-bold text-gray-800 leading-none">{promo.vistas ?? 0}</p>
               <p className="text-[8px] text-gray-500">Visualizaciones</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
             <MessageCircle size={12} className="text-blue-500" />
             <div>
-              <p className="text-xs font-bold text-gray-800 leading-none">2345</p>
+              <p className="text-xs font-bold text-gray-800 leading-none">{promo.interacciones ?? 0}</p>
               <p className="text-[8px] text-gray-500">Interacciones</p>
             </div>
           </div>

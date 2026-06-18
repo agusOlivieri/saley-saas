@@ -39,3 +39,25 @@ CREATE TABLE interacciones (
 CREATE INDEX interacciones_ubicacion_gist ON interacciones USING gist (ubicacion);
 
 COMMENT ON TABLE interacciones IS 'Registro de visualizaciones y clicks de consumidores para estadísticas y mapa de calor';
+
+-- 4. Crear Vista para consumir Promos Activas con Lat/Lng en el Frontend (Mobile App)
+CREATE OR REPLACE VIEW vw_promos_activas AS
+SELECT 
+    p.id,
+    p.comercio_id,
+    p.titulo,
+    p.descripcion,
+    p.fecha_inicio,
+    p.fecha_fin,
+    p.activa,
+    c.nombre_comercial,
+    c.direccion_texto,
+    c.categoria AS comercio_categoria,
+    ST_Y(c.ubicacion::geometry) AS lat,
+    ST_X(c.ubicacion::geometry) AS lng
+FROM promos p
+JOIN comercios c ON p.comercio_id = c.id
+WHERE p.activa = true AND c.ubicacion IS NOT NULL;
+
+-- Asignar permisos a la vista para acceso público
+GRANT SELECT ON vw_promos_activas TO anon, authenticated;
